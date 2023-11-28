@@ -20,3 +20,4 @@
 # AVANCES PROYECTO VIDEOJUEGO
 ## Avance 1: El jugador puede introducir su nombre y ser saludado para comenzar el juego
 ## Avance 2: El jugado puede jugar con el teclado y cada tecla que presione se muestra en pantalla, cuando presione la tecla ↑, se termina el juego
+## Avance 3: Hacemos uso de la libreria os par manipular la terminal.

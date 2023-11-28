@@ -1,16 +1,17 @@
-from readchar import readkey, key
+from readchar import readkey
+import os
 
-jugador=input('Escribe tu nombre jugador: ')
-print(f"Hola {jugador} bienvenido a esta aventura")
-print(f"A continuacion podras jugar con tu teclado presionando cualquier tecla y podras visualizarla en pantalla")
-print(f"Si quiere parar el juego presiona la tecla ↑")
+def limpiar_terminal():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
-while True:
-  k = readkey()
-  if k == key.UP:
-    break
-  print(k)
-  
-print(f"¡Gracias {jugador}, presionaste la tecla ↑, fin del juego! ")
-
+def teclado_reactivo():
+    limite = 50
+    counter = 0
+    while counter <= limite:
+        tecla_presionada = readkey()
+        if tecla_presionada == 'n':
+            limpiar_terminal()
+            print(counter)
+            counter += 1
+teclado_reactivo()
 
