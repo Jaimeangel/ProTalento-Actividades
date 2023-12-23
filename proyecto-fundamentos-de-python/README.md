@@ -22,3 +22,4 @@
 ## Avance 2: El jugado puede jugar con el teclado y cada tecla que presione se muestra en pantalla, cuando presione la tecla ↑, se termina el juego
 ## Avance 3: Hacemos uso de la libreria os par manipular la terminal.
 ## Avance 4: Imprimimos un tablero de juego en pantalla y despues nos desplazamos en el mismo con la ficha de jugador 'P' haciendo uso de las teclas de flecha del teclado
+## Avance 5 : Usando el paradigma POO encapsulamos la estructura logica de nuestro juego en una clase. El jugador puede jugar en varios campos de juego listados en la carpeta tableros
