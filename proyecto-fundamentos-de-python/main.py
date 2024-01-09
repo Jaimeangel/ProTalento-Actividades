@@ -4,13 +4,20 @@ from readchar import readkey, key
 import os
 
 class DataJugador:
-  def dataJugador(self):
+  def __init__(self):
+    self.nombre_jugador_juego = None
+    self.ficha = None
+    
+  def datos_jugador(self):
     print('Bienvenido al juego guerrero, tu mision es atravesar el campo de batalla')
     print('Debes llegar hasta la puerta de salida del campo de batalla')
     print('La puerta esta ubicada en la ultima fila')
-    nombre_jugador_juego = input('Ingresa tu nombre: ')
-    ficha = input(f'Ingresa la ficha con la que deseas jugar {nombre_jugador_juego}: ')
-    return (nombre_jugador_juego,ficha)
+    self.nombre_jugador_juego = input('Ingresa tu nombre: ')
+    self.ficha = input(f'Ingresa la ficha con la que deseas jugar {self.nombre_jugador_juego}: ')
+
+  def obtener_datos_jugador(self):
+    self.datos_jugador()
+    return (self.nombre_jugador_juego, self.ficha)
 
 class LeerMapa:
   TABLEROS_DIR = 'tableros/'
@@ -34,7 +41,6 @@ class LeerMapa:
       posicion_x, posicion_y, final_x, final_y = map(int,primera_linea.split())
       mapa = [list(linea.rstrip()) for linea in archivo]
 
-      # inicializando atributos de clase
       self.coordenada_inicial_x = posicion_y
       self.coordenada_inicial_y = posicion_x
       self.coordenada_x_final_juego = final_y
@@ -45,17 +51,24 @@ class LeerMapa:
 
   def obtener_datos_mapa(self):
     self._cargar_mapa()
-    return (self.coordenada_inicial_x, self.coordenada_inicial_y,
-            self.coordenada_x_final_juego, self.coordenada_y_final_juego,
-            self.laberinto_list, self.coordenada_final_x,
-            self.coordenada_final_y)
+    return (
+      self.coordenada_inicial_x,
+      self.coordenada_inicial_y,
+      self.coordenada_x_final_juego, 
+      self.coordenada_y_final_juego,
+      self.laberinto_list, 
+      self.coordenada_final_x,
+      self.coordenada_final_y
+    )
 
 class ImprimirTablero:
-  def limpiarTerminal(self):
+  @staticmethod
+  def limpiar_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
-
-  def printTablero(self,tablero):
-    self.limpiarTerminal()
+    
+  @staticmethod
+  def print_tablero(tablero):
+    ImprimirTablero().limpiar_terminal()
     for fila in tablero:
       string = ' '.join(fila)
       print(string)
@@ -82,23 +95,23 @@ class LogicaJuego:
     self.x = coordenada_inicial_x
     self.y = coordenada_inicial_y
 
-  def ponerFichaInicialTablero(self):
+  def poner_ficha_inicial_tablero(self):
     nuevo_laberinto = deepcopy(self.laberinto)
     nuevo_laberinto[self.x][self.y] = self.ficha
     return nuevo_laberinto
-  
-  def limitePared(self, x: int, y: int):
+
+  def limite_pared(self, x: int, y: int):
     return self.laberinto[x][y] != self.PARED
 
-  def limitesCoordenadas(self, x: int, y: int):
+  def limites_coordenadas(self, x: int, y: int):
     if x < 0 or y < 0:
       return False
     elif x <= self.limite_tablero_x and y <= self.limite_tablero_y:
-      return self.limitePared(x, y)
+      return self.limite_pared(x, y)
     elif x > self.limite_tablero_x or y > self.limite_tablero_y:
       return False
 
-  def changeTablero(self, tecla_presionada: str):
+  def cambiar_tablero(self, tecla_presionada: str):
     movimientos = {
         key.DOWN: (1, 0),
         key.UP: (-1, 0),
@@ -108,42 +121,42 @@ class LogicaJuego:
 
     if tecla_presionada in movimientos:
       dx, dy = movimientos[tecla_presionada]
-      if self.limitesCoordenadas(self.x + dx, self.y + dy):
+      if self.limites_coordenadas(self.x + dx, self.y + dy):
         nuevo_laberinto = deepcopy(self.laberinto)
         nuevo_laberinto[self.x + dx][self.y + dy] = self.ficha
         self.x += dx
         self.y += dy
         return nuevo_laberinto
-      else:
-        nuevo_laberinto = deepcopy(self.laberinto)
-        nuevo_laberinto[self.x][self.y] = self.ficha
-        return nuevo_laberinto
+        
+    nuevo_laberinto = deepcopy(self.laberinto)
+    nuevo_laberinto[self.x][self.y] = self.ficha
+    return nuevo_laberinto
 
-  def startGame(self):
-    nuevo_laberinto = self.ponerFichaInicialTablero()
-    ImprimirTablero().printTablero(nuevo_laberinto)
+  def start_game(self):
+    nuevo_laberinto = self.poner_ficha_inicial_tablero()
+    ImprimirTablero().print_tablero(nuevo_laberinto)
     while (self.x, self.y) != (self.coordenada_x_final_juego,
                                  self.coordenada_y_final_juego):
       tecla_presionada = readkey()
-      tablero_actualizado = self.changeTablero(tecla_presionada)
-      ImprimirTablero().printTablero(tablero_actualizado)
+      tablero_actualizado = self.cambiar_tablero(tecla_presionada)
+      ImprimirTablero().print_tablero(tablero_actualizado)
 
 class Juego:
 
   def __init__(self):
     self.ficha_jugador = None
     self.nombre_jugador = None
-    self.logicaGameInstancia = None
-    self.informacionJugador()
-    self.cargarDatosMapa()
+    self.logica_juego_instancia = None
+    self.informacion_jugador()
+    self.cargar_datos_mapa()
 
-  def informacionJugador(self):
+  def informacion_jugador(self):
     (
       self.nombre_jugador,
       self.ficha_jugador
-    ) = DataJugador().dataJugador()
-  
-  def cargarDatosMapa(self):
+    ) = DataJugador().obtener_datos_jugador()
+
+  def cargar_datos_mapa(self):
     (
       coordenada_inicial_x,
       coordenada_inicial_y,
@@ -154,8 +167,8 @@ class Juego:
       coordenada_final_y
     ) = LeerMapa().obtener_datos_mapa()
 
-    
-    self.logicaGameInstancia = LogicaJuego(
+
+    self.logica_juego_instancia = LogicaJuego(
       laberinto_list,
       coordenada_final_x,
       coordenada_final_y,
@@ -165,11 +178,10 @@ class Juego:
       coordenada_inicial_x,
       coordenada_inicial_y
     )
-  
-  def Start(self):
-    self.logicaGameInstancia.startGame()
+
+  def start(self):
+    self.logica_juego_instancia.start_game()
     print(f"felicidades {self.nombre_jugador} has ganado")
 
 game1 = Juego()
-game1.Start()
-
+game1.start()
