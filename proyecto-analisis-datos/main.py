@@ -1,25 +1,20 @@
-from datasets import load_dataset
-import numpy as np
+import requests
+import csv
 import pandas as pd
 
-dataset = load_dataset("mstz/heart_failure")
+URL='https://huggingface.co/datasets/mstz/heart_failure/raw/main/heart_failure_clinical_records_dataset.csv'
 
-data = dataset["train"]
+def urlToCSV(URL):
+    response = requests.get(URL)
 
-df = pd.DataFrame(data)
+    if response.status_code == 200:
 
-df_perecidos = df[df['is_dead'] == 1]
-df_sobrevivientes = df[df['is_dead'] == 0]
+        csv_file = 'api_data.csv'
 
-promedio_perecidos = df_perecidos.groupby('is_dead')['age'].mean()
-promedio_sobrevivientes = df_sobrevivientes.groupby('is_dead')['age'].mean()
+        with open(csv_file, 'w', newline='') as file:
+            file.write(response.text)
 
-# tipos de datos SI son correctos en cada colúmna
-comprobacion_tipos_dato = df.dtypes
-print(comprobacion_tipos_dato)
+    else:
+        print('Error request API')
 
-# Calcular la cantidad de hombres fumadores vs mujeres fumadoras
-filtro_smokers = df['is_smoker'] == True
-nuevo_df = df[filtro_smokers]
-agrupar_sex_smoker = nuevo_df.groupby(['is_male', 'is_smoker']).size()
-print(agrupar_sex_smoker)
+urlToCSV(URL)
